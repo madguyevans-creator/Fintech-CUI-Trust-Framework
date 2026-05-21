@@ -6,7 +6,7 @@
 
 The Human-AI Symbiosis Protocol is an open, MIT-licensed engineering specification that defines **when** a conversational AI agent must obtain explicit user authorization and **what** it must never autonomously generate. It is not a software product. It is a public-domain technical specification — analogous to an RFC — that any enterprise with engineering resources can implement.
 
-The protocol addresses a structural vacuum: as U.S. businesses shift from graphical user interfaces (GUI) to conversational user interfaces (CUI), AI agents are making decisions about what to say, what to promise, and what to authorize. There is currently no shared, industry-level standard defining the trust boundaries within which these agents should operate. This protocol fills that vacuum.
+The protocol addresses a structural vacuum: as businesses shift from graphical user interfaces (GUI) to conversational user interfaces (CUI), AI agents are making decisions about what to say, what to promise, and what to authorize. There is currently no shared, industry-level standard defining the trust boundaries within which these agents should operate. This protocol fills that vacuum.
 
 ## Core Mechanisms
 
