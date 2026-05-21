@@ -17,7 +17,7 @@ The protocol addresses a structural vacuum: as businesses shift from graphical u
 
 ## Who is this for?
 
-Any enterprise whose conversational AI agents handle interactions that touch payments, financial commitments, or regulated consumer decisions — including healthcare booking platforms, legal intake services, education enrollment systems, retail delivery platforms, and community financial institutions. You do not need to be a fintech company. If your chatbot or voice agent ever says something that could cost your customer money, this protocol is for you.
+Any enterprise whose conversational AI agents handle interactions that touch payments, financial commitments, or regulated consumer decisions — including healthcare booking platforms, legal intake services, education enrollment systems, retail delivery platforms, and community financial institutions. If your chatbot or voice agent ever says something that could cost your customer money, this protocol is for you.
 
 ## Getting Started
 
@@ -38,8 +38,6 @@ See [`/spec`](./spec/) for the protocol specification.
 ```
 
 ## Background
-
-The protocol builds on empirical validation across five Asia-Pacific markets with fundamentally different financial consumer protection regimes — Singapore (MAS), Indonesia (OJK), Malaysia, the Philippines, and Thailand — where the core trust-boundary logic remained architecturally identical and only jurisdiction-specific compliance mapping required configuration.
 
 - [Concept Paper](./background/concept-paper.pdf) — Academic framing: Fintech AI Governance and Human-AI Symbiosis (TOE + TAM framework)
 - [Architecture Whitepaper](./background/architecture-whitepaper.pdf) — The 5-Layer Trust & Routing reference architecture that informed the protocol
