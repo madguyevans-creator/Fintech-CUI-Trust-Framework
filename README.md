@@ -10,6 +10,38 @@ This standard is engineered under the **AI Native Engineering** paradigm: govern
 
 The standard addresses a structural vacuum: as systems shift from graphical user interfaces (GUI) to conversational user interfaces (CUI), AI agents make decisions about what to say, what to promise, and what to authorize. No shared, industry-level specification currently defines the trust boundaries within which these agents must operate.
 
+## Architecture
+
+```
+User → [Agent Runtime] → [Protocol Middleware] → [LLM]
+                              │
+                        ┌─────┴─────┐
+                        │   Input   │
+                        │ Safeguard │
+                        └─────┬─────┘
+                              │
+                        ┌─────┴─────┐
+                        │  Intent   │
+                        │Classifier │
+                        └─────┬─────┘
+                              │
+           ┌──────────────────┼──────────────────┐
+           │                  │                  │
+    ┌──────┴──────┐   ┌──────┴──────┐   ┌──────┴──────┐
+    │Authorization│   │ Generation  │   │  Insurance  │
+    │  Trigger    │   │  Boundary   │   │    Fuse     │
+    │  Engine     │   │  Engine     │   │   Engine    │
+    └──────┬──────┘   └──────┬──────┘   └──────┬──────┘
+           │                  │                  │
+           └──────────────────┼──────────────────┘
+                              │
+                        ┌─────┴─────┐
+                        │   Audit   │
+                        │   Trail   │
+                        │   Logger  │
+                        └───────────┘
+```
+
 ## Five-Layer Architecture
 
 The standard defines five structural layers, each enforced at a specific point in the agent's generation pipeline:
