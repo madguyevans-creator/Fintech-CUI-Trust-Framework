@@ -1,14 +1,14 @@
-# An Open Governance Standard for Conversational Finance Agents
+# Conversational Finance Governance Framework
 
-> An open-source engineering governance standard defining trust boundaries for conversational AI agents in high-stakes domains. MIT Licensed.
+> An open-source, model-agnostic, engineering-level governance framework for conversational AI in financial contexts. Also referred to as An Open Governance Standard for Conversational Finance Agents. MIT Licensed.
 
 ## What is this?
 
-An Open Governance Standard for Conversational Finance Agents is an open, MIT-licensed engineering specification that defines the structural governance components a conversational AI agent must implement before being deployed in any context where its outputs could create financial obligations, regulatory exposure, or consumer harm. It is not a software product. It is a public-domain technical specification — analogous to an RFC — that any enterprise with engineering resources can implement.
+The Conversational Finance Governance Framework is an open, MIT-licensed engineering specification that defines the structural governance components a conversational AI agent must implement before being deployed in any context where its outputs could create financial obligations, regulatory exposure, or consumer harm. It is not a software product. It is a public-domain technical specification — analogous to an RFC — that any enterprise with engineering resources can implement.
 
-This standard is engineered under the **AI Native Engineering** paradigm: governance is not retrofitted onto AI systems after deployment as an external audit layer. Governance mechanisms — intent classification, authorization gating, generation boundary enforcement, circuit-breaking, and audit logging — are embedded as structural components from the first line of code. They are properties of the interaction architecture, not post-hoc content filters.
+This framework is engineered under the **AI Native Engineering** paradigm: governance is not retrofitted onto AI systems after deployment as an external audit layer. Governance mechanisms — intent classification, authorization gating, generation boundary enforcement, circuit-breaking, and audit logging — are embedded as structural components from the first line of code. They are properties of the interaction architecture, not post-hoc content filters.
 
-The standard addresses a structural vacuum: as systems shift from graphical user interfaces (GUI) to conversational user interfaces (CUI), AI agents make decisions about what to say, what to promise, and what to authorize. No shared, industry-level specification currently defines the trust boundaries within which these agents must operate.
+The framework addresses a structural gap: as systems shift from graphical user interfaces (GUI) to conversational user interfaces (CUI), AI agents make decisions about what to say, what to promise, and what to authorize. No shared, industry-level specification currently defines the trust boundaries within which these agents must operate.
 
 ## Architecture
 
@@ -16,21 +16,17 @@ The standard addresses a structural vacuum: as systems shift from graphical user
 User → [Agent Runtime] → [Protocol Middleware] → [LLM]
                               │
                         ┌─────┴─────┐
-                        │   Input   │
-                        │ Safeguard │
-                        └─────┬─────┘
-                              │
-                        ┌─────┴─────┐
                         │  Intent   │
-                        │Classifier │
+                        │Classification│
+                        │  Matrix   │
                         └─────┬─────┘
                               │
            ┌──────────────────┼──────────────────┐
            │                  │                  │
     ┌──────┴──────┐   ┌──────┴──────┐   ┌──────┴──────┐
-    │Authorization│   │ Generation  │   │  Insurance  │
-    │  Trigger    │   │  Boundary   │   │    Fuse     │
-    │  Engine     │   │  Engine     │   │   Engine    │
+    │Authorization│   │ Generation  │   │  Authority  │
+    │  Trigger    │   │  Boundary   │   │  Circuit    │
+    │             │   │             │   │  Breaker    │
     └──────┬──────┘   └──────┬──────┘   └──────┬──────┘
            │                  │                  │
            └──────────────────┼──────────────────┘
@@ -38,35 +34,35 @@ User → [Agent Runtime] → [Protocol Middleware] → [LLM]
                         ┌─────┴─────┐
                         │   Audit   │
                         │   Trail   │
-                        │   Logger  │
+                        │  Pipeline │
                         └───────────┘
 ```
 
 ## Five-Layer Architecture
 
-The standard defines five structural layers, each enforced at a specific point in the agent's generation pipeline:
+The framework defines five structural layers, each enforced at a specific point in the agent's generation pipeline:
 
-1. **Input Safeguard Layer** — Pre-processes user input to detect and neutralize prompt injection, PII leakage, and adversarial input patterns before downstream processing.
-2. **Intent Classifier Layer** — Classifies each conversational intent along two independent axes: Financial Commitment Risk (F0–F3) and Regulatory Sensitivity (R0–R3).
-3. **Authorization Trigger Layer** — Applies the Authorization Trigger Decision Table. If the classified intent requires authorization, the agent suspends generation and obtains explicit user confirmation before proceeding.
-4. **Generation Boundary Layer** — Enforces categorical prohibitions at two points: pre-generation (blocking before LLM invocation) and post-generation (suppressing violating output).
-5. **Audit Trail Layer** — Produces an immutable, hash-chained, machine-readable log of every generation, authorization, escalation, and circuit-break decision.
+1. **Intent Classification Matrix** — Classifies each conversational intent along two independent axes: Financial Commitment Risk (F0–F3) and Regulatory Sensitivity (R0–R3), before any response is generated.
+2. **Authorization Trigger** — Applies the Authorization Trigger Decision Table. If the classified intent requires authorization, the agent suspends generation and obtains explicit user confirmation before proceeding. Not a binary switch — a conditionally-compiled authorization logic configurable by regulatory intensity.
+3. **Generation Boundary** — Constrains the model's permissible response space before a user-facing answer is delivered, rather than relying solely on after-the-fact manual review. Enforced at both pre-generation and post-generation stages.
+4. **Audit Trail Pipeline** — Produces an immutable, hash-chained, machine-readable log of every generation, authorization, escalation, and circuit-break decision, with full decision-chain traceability from intent classification to final output.
+5. **Authority Circuit Breaker** — A circuit-break mechanism that severs the agent's generation privilege in real time when conversation state reaches pre-defined compliance thresholds. Unlike Authorization Trigger, which suspends generation pending user confirmation, Authority Circuit Breaker terminates generation authority outright and transfers control to a human operator or deterministic SOP.
 
 ## Core Mechanisms
 
-- **Authorization Trigger** — A structured taxonomy of conversational intents that require explicit user authorization before an AI agent may proceed. Intents are classified along two axes: financial commitment risk (F0–F3) and regulatory sensitivity (R0–R3). The trigger fires before the agent generates any response.
-- **Generation Boundary** — A categorical specification of content types an agent must never autonomously generate, including financial commitments, price guarantees, compliance representations, and discriminatory or deceptive outputs. Enforced at both pre-generation and post-generation stages.
-- **Insurance Fuse** — A circuit-break mechanism that severs the agent's generation privilege in real time when conversation state reaches pre-defined compliance thresholds. Unlike Authorization Trigger, which suspends generation pending user confirmation, Insurance Fuse terminates generation authority outright and transfers control to a human operator or deterministic SOP. Trigger conditions include: cumulative conversation patterns approaching regulatory limits, user vulnerability signals, and multi-turn escalation trajectories exceeding safe bounds.
-- **Audit Trail** — A standardized, immutable log format capturing every generation, authorization, escalation, and fuse-trigger decision with full decision-chain traceability, supporting both internal governance and third-party audit.
+- **Authorization Trigger** — A structured taxonomy of conversational intents that require explicit user authorization before an AI agent may proceed. Intents are classified along two axes: financial commitment risk (F0–F3) and regulatory sensitivity (R0–R3). The trigger fires before the agent generates any response. Not a binary switch — the same user utterance triggers different authorization paths under different compliance parameter sets.
+- **Generation Boundary** — A categorical specification of content types an agent must never autonomously generate, including financial commitments, price guarantees, compliance representations, and discriminatory or deceptive outputs. Constrains the model's permissible response space before a user-facing answer is delivered, rather than relying solely on after-the-fact manual review.
+- **Authority Circuit Breaker** — A circuit-break mechanism that severs the agent's generation privilege in real time when conversation state reaches pre-defined compliance thresholds. Unlike Authorization Trigger, which suspends generation pending user confirmation, Authority Circuit Breaker terminates generation authority outright and transfers control to a human operator or deterministic SOP. Trigger conditions include: cumulative conversation patterns approaching regulatory limits, user vulnerability signals, and multi-turn escalation trajectories exceeding safe bounds.
+- **Audit Trail Pipeline** — A standardized, immutable log format capturing every generation, authorization, escalation, and circuit-break decision with full decision-chain traceability, supporting both internal governance and third-party audit.
 - **Three-Tier Adoption Model** — Lite (default configuration, zero customization), Standard (designated audit role), and Full (forkable for enterprise integration). The same specification serves both small organizations and large enterprises.
 
 ## Core/Mapping Decoupling
 
-A defining architectural property of this standard is the separation of core governance logic from jurisdiction-specific compliance rules. The five layers remain architecturally invariant across deployment contexts. Jurisdiction-specific requirements — retention periods, notification thresholds, additional prohibited content categories — are configured through a Compliance Mapping Layer without modifying the core specification.
+A defining architectural property of this framework is the separation of core governance logic from jurisdiction-specific compliance rules. The five layers remain architecturally invariant across deployment contexts. Jurisdiction-specific requirements — retention periods, notification thresholds, additional prohibited content categories — are configured through a Compliance Mapping Layer without modifying the core specification.
 
 ## Who is this for?
 
-Any enterprise whose conversational AI agents handle interactions that touch payments, financial commitments, or regulated consumer decisions — including financial institutions, healthcare booking platforms, legal intake services, education enrollment systems, and retail delivery platforms.
+Any enterprise whose conversational AI agents handle interactions that touch payments, financial commitments, or regulated consumer decisions — including financial institutions, FinTech SMEs, healthcare booking platforms, legal intake services, education enrollment systems, and retail delivery platforms.
 
 ## Getting Started
 

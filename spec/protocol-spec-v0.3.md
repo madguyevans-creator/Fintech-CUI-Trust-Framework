@@ -1,8 +1,9 @@
-# An Open Governance Standard for Conversational Finance Agents — Specification v0.2
+# Conversational Finance Governance Framework — Specification v0.3
 
-**Status:** Draft  
-**Author:** Evans L. Han  
-**License:** MIT  
+**Status:** Draft
+**Author:** Evans L. Han
+**License:** MIT
+**Also referred to as:** An Open Governance Standard for Conversational Finance Agents
 
 ---
 
@@ -10,7 +11,7 @@
 
 ### 1.1 Purpose
 
-This document specifies An Open Governance Standard for Conversational Finance Agents — an engineering standard defining trust boundaries for conversational AI (CUI) agents. An implementation conforming to this specification guarantees that, for every agent response generated in a high-stakes context:
+This document specifies the Conversational Finance Governance Framework — an engineering standard defining trust boundaries for conversational AI (CUI) agents. An implementation conforming to this specification guarantees that, for every agent response generated in a high-stakes context:
 
 - The response has been classified by risk level **before** generation.
 - If the risk level requires user authorization, the agent **must not proceed** until authorization is explicitly obtained.
@@ -22,10 +23,10 @@ This document specifies An Open Governance Standard for Conversational Finance A
 
 This specification covers:
 
-- **Authorization Trigger Matrix** (Section 3): When an agent must obtain user authorization.
-- **Insurance Fuse Mechanism** (Section 4): When an agent's generation privilege must be unconditionally severed.
+- **Authorization Trigger Decision Table** (Section 3): When an agent must obtain user authorization.
+- **Authority Circuit Breaker** (Section 4): When an agent's generation privilege must be unconditionally severed.
 - **Generation Boundary Rules** (Section 5): What an agent must never generate.
-- **Audit Trail Standard** (Section 6): How every decision is recorded.
+- **Audit Trail Pipeline Standard** (Section 6): How every decision is recorded.
 - **Adoption Tiers** (Section 7): Three conformance levels for different organizational scales.
 - **Compliance Mapping Layer** (Section 8): How jurisdiction-specific rules are overlaid.
 
@@ -46,25 +47,25 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "S
 
 **Agent** — A software system that uses a generative AI model to conduct conversational interactions with a human user via text or voice.
 
-**Authorization Trigger** — A rule that, when matched by a conversational intent, requires the agent to suspend autonomous generation and request explicit user confirmation before proceeding.
+**Authorization Trigger** — A rule that, when matched by a conversational intent, requires the agent to suspend autonomous generation and request explicit user confirmation before proceeding. Not a binary switch — the same user utterance triggers different authorization paths under different compliance parameter sets.
 
-**Insurance Fuse** — A mechanism that severs an agent's generation privilege in real time when conversation state reaches pre-defined compliance thresholds, transferring control to a human operator or deterministic SOP. Distinguished from Authorization Trigger: AT suspends generation pending user confirmation; Insurance Fuse terminates generation authority unconditionally.
+**Authority Circuit Breaker** — A mechanism that severs an agent's generation privilege in real time when conversation state reaches pre-defined compliance thresholds, transferring control to a human operator or deterministic SOP. Distinguished from Authorization Trigger: AT suspends generation pending user confirmation; Authority Circuit Breaker terminates generation authority unconditionally.
 
-**Generation Boundary** — A rule that categorically prohibits the agent from autonomously generating content of a specified type, regardless of user request.
+**Generation Boundary** — A rule that constrains the model's permissible response space before a user-facing answer is delivered, rather than relying solely on after-the-fact manual review.
 
-**Conversational Intent** — The identified purpose or goal of a user's utterance within a conversation turn, as classified by the agent's intent recognition system.
+**Intent Classification Matrix** — The two-axis (FCR × RS) classification table that maps each conversational intent to a risk level before any response is generated.
 
 **Escalation** — The act of revoking an agent's generation privileges for the current interaction and routing it to a human operator or a deterministic Standard Operating Procedure (SOP).
 
-**Audit Trail** — An immutable, timestamped log of every generation, authorization, escalation, and fuse-trigger decision made by the standard during agent operation.
+**Audit Trail Pipeline** — An immutable, timestamped, hash-chained log of every generation, authorization, escalation, and circuit-break decision made by the framework during agent operation, providing full decision-chain traceability from intent classification to final output.
 
-**Compliance Mapping Layer** — A jurisdiction-specific configuration overlay that maps local regulatory requirements to the standard's core mechanisms, without modifying the core specification.
+**Compliance Mapping Layer** — A jurisdiction-specific configuration overlay that maps local regulatory requirements to the framework's core mechanisms, without modifying the core specification.
 
 **SME** — Small or Medium-Sized Enterprise.
 
 ---
 
-## 3. Authorization Trigger Matrix
+## 3. Authorization Trigger Decision Table
 
 ### 3.1 Intent Classification Axes
 
@@ -119,40 +120,40 @@ The authorization prompt MUST NOT:
 
 ---
 
-## 4. Insurance Fuse Mechanism
+## 4. Authority Circuit Breaker
 
 ### 4.1 Purpose
 
-The Insurance Fuse provides a hard-stop risk boundary. While Authorization Trigger (Section 3) suspends generation pending user confirmation, and Generation Boundary (Section 5) blocks specific content categories, the Insurance Fuse severs the agent's generation privilege unconditionally and transfers control to a human operator or deterministic SOP. It is the mechanism of last resort within the interaction architecture.
+The Authority Circuit Breaker provides a hard-stop risk boundary. While Authorization Trigger (Section 3) suspends generation pending user confirmation, and Generation Boundary (Section 5) constrains the permissible response space, the Authority Circuit Breaker severs the agent's generation privilege unconditionally and transfers control to a human operator or deterministic SOP. It is the mechanism of last resort within the interaction architecture.
 
 ### 4.2 Trigger Conditions
 
-An implementation MUST activate the Insurance Fuse when any of the following conditions are met:
+An implementation MUST activate the Authority Circuit Breaker when any of the following conditions are met:
 
 1. **Cumulative Pattern Threshold**: The number of AUTH or ESCALATE triggers within a single conversation session exceeds a configurable threshold, indicating that the conversation has moved into a risk domain the agent should not navigate autonomously.
 2. **User Vulnerability Signal**: The user's utterances contain explicit markers of distress, confusion, or vulnerability in a context involving financial commitments or regulatory decisions.
 3. **Multi-Turn Escalation Trajectory**: The conversation's intent classification trajectory shows progressive movement toward higher-risk (FCR, RS) cells across successive turns, even if no single turn independently triggers ESCALATE.
 4. **Compliance Boundary Proximity**: The conversation context — including cumulative interaction patterns such as communication frequency, timing, and content type — approaches pre-defined regulatory limits configured in the active Compliance Mapping Layer.
 
-### 4.3 Fuse Activation Behavior
+### 4.3 Circuit Breaker Activation Behavior
 
-When the Insurance Fuse activates, the implementation MUST:
+When the Authority Circuit Breaker activates, the implementation MUST:
 
 1. Immediately terminate the agent's generation privilege for the current session.
-2. Log the fuse activation event per Section 6, including the specific trigger condition(s) met and the conversation state at the point of activation.
-3. Transfer control to a human operator or a deterministic SOP. The transfer MUST include the full conversation context and the fuse activation reason.
+2. Log the circuit-break activation event per Section 6, including the specific trigger condition(s) met and the conversation state at the point of activation.
+3. Transfer control to a human operator or a deterministic SOP. The transfer MUST include the full conversation context and the circuit-break activation reason.
 4. The agent MUST NOT resume generation within the same session.
 
 ### 4.4 Configuration
 
-The Insurance Fuse threshold parameters SHALL be configurable through the Compliance Mapping Layer (Section 8). Default thresholds are defined in the Lite tier configuration:
+The Authority Circuit Breaker threshold parameters SHALL be configurable through the Compliance Mapping Layer (Section 8). Default thresholds are defined in the Lite tier configuration:
 
 | Parameter | Default | Description |
 |-----------|---------|-------------|
-| `fuse.cumulative_trigger_limit` | 3 | Number of AUTH/ESCALATE events before fuse activates |
-| `fuse.vulnerability_detection` | enabled | Whether user vulnerability signals trigger the fuse |
-| `fuse.trajectory_window` | 5 | Number of turns to analyze for escalation trajectory |
-| `fuse.compliance_proximity` | per-jurisdiction | Configured via Compliance Mapping Layer |
+| `breaker.cumulative_trigger_limit` | 3 | Number of AUTH/ESCALATE events before breaker activates |
+| `breaker.vulnerability_detection` | enabled | Whether user vulnerability signals trigger the breaker |
+| `breaker.trajectory_window` | 5 | Number of turns to analyze for escalation trajectory |
+| `breaker.compliance_proximity` | per-jurisdiction | Configured via Compliance Mapping Layer |
 
 ---
 
@@ -188,24 +189,24 @@ When generation is blocked by a boundary rule, the agent SHALL respond with a ne
 
 ---
 
-## 6. Audit Trail Standard
+## 6. Audit Trail Pipeline
 
 ### 6.1 Log Entry Schema
 
-Every generation, authorization, escalation, and fuse-trigger event SHALL produce a log entry with the following fields:
+Every generation, authorization, escalation, and circuit-break event SHALL produce a log entry with the following fields:
 
 | Field | Type | Required | Description |
 |-------|------|----------|-------------|
 | `event_id` | UUID | MUST | Unique identifier for this event |
 | `timestamp` | ISO 8601 | MUST | When the event occurred (UTC) |
 | `session_id` | UUID | MUST | Identifier for the conversation session |
-| `event_type` | Enum | MUST | One of: `generation`, `authorization_request`, `authorization_granted`, `authorization_denied`, `escalation`, `boundary_block`, `fuse_activation` |
+| `event_type` | Enum | MUST | One of: `generation`, `authorization_request`, `authorization_granted`, `authorization_denied`, `escalation`, `boundary_block`, `circuit_breaker_activation` |
 | `intent_classification` | Object | MUST | `{fcr_level: "F0"-"F3", rs_level: "R0"-"R3", intent_label: string}` |
-| `trigger_decision` | Enum | MUST | One of: `free`, `auth_required`, `escalate`, `fuse` |
+| `trigger_decision` | Enum | MUST | One of: `free`, `auth_required`, `escalate`, `breaker` |
 | `user_input_summary` | String | MUST | Hashed or summarized user utterance (MUST NOT store raw PII) |
 | `agent_response_summary` | String | MUST | Hash or summary of generated response |
 | `decision_chain` | Array | SHOULD | Ordered list of protocol decisions leading to this event |
-| `operator_id` | String | COND | Identifier of human operator if escalation or fuse activation occurred |
+| `operator_id` | String | COND | Identifier of human operator if escalation or circuit-break activation occurred |
 | `compliance_mapping_id` | String | SHOULD | Identifier of the active compliance mapping configuration |
 
 ### 6.2 Immutability Requirements
@@ -230,10 +231,10 @@ Logs SHALL be retained for a minimum period defined by the active compliance map
 **Target**: Single-proprietor SME with no dedicated IT or compliance staff.
 
 **Requirements for conformance**:
-- Deploy the standard's reference implementation with default configuration.
+- Deploy the framework's reference implementation with default configuration.
 - The default configuration MUST pre-enable all Authorization Triggers at F2+ or R2+ levels.
 - The default configuration MUST pre-enable all Generation Boundary categories.
-- The default configuration MUST pre-enable the Insurance Fuse with default thresholds.
+- The default configuration MUST pre-enable the Authority Circuit Breaker with default thresholds.
 - Audit trail MUST be enabled with append-only logging to local storage.
 - No customization is required.
 
@@ -260,7 +261,7 @@ Logs SHALL be retained for a minimum period defined by the active compliance map
 - Organization MAY fork the specification and reference implementation.
 - Custom compliance mapping configurations MAY be developed for the organization's full regulatory footprint.
 - Integration with existing SIEM, GRC, or compliance infrastructure is RECOMMENDED.
-- Conformance with the core Authorization Trigger Matrix, Insurance Fuse, and Generation Boundary Rules MUST be preserved. An implementation that weakens or removes a trigger, fuse, or boundary defined in Sections 3, 4, and 5 SHALL NOT claim conformance.
+- Conformance with the core Authorization Trigger Decision Table, Authority Circuit Breaker, and Generation Boundary Rules MUST be preserved. An implementation that weakens or removes a trigger, breaker, or boundary defined in Sections 3, 4, and 5 SHALL NOT claim conformance.
 
 ---
 
@@ -268,7 +269,7 @@ Logs SHALL be retained for a minimum period defined by the active compliance map
 
 ### 8.1 Concept
 
-The standard's core mechanisms (Sections 3–6) are **jurisdiction-agnostic**. A compliance mapping configuration overlays jurisdiction-specific requirements onto the core without modifying it. This decoupling is a structural property of the architecture.
+The framework's core mechanisms (Sections 3–6) are **jurisdiction-agnostic**. A compliance mapping configuration overlays jurisdiction-specific requirements onto the core without modifying it. This decoupling is a structural property of the architecture.
 
 ### 8.2 Mapping Schema
 
@@ -279,10 +280,10 @@ A compliance mapping configuration SHALL specify:
 | `jurisdiction_id` | Identifier for the regulatory regime | `sg-mas`, `id-ojk` |
 | `trigger_overrides` | Adjustments to the Authorization Trigger decision table | Elevate F1+R1 from AUTH to ESCALATE for stricter regimes |
 | `boundary_additions` | Additional prohibited content categories | "Interest rate predictions" for banking regulators |
-| `fuse_overrides` | Adjustments to Insurance Fuse thresholds | Lower cumulative trigger limit for stricter regimes |
+| `breaker_overrides` | Adjustments to Authority Circuit Breaker thresholds | Lower cumulative trigger limit for stricter regimes |
 | `retention_period_days` | Audit log retention requirement | 2555 (7 years) default |
 | `audit_export_format` | Required format for third-party audit submission | `jsonl`, `csv`, `pdf` |
-| `notification_requirements` | Events that must trigger regulator notification | "Any fuse activation event within 24 hours" |
+| `notification_requirements` | Events that must trigger regulator notification | "Any circuit-break activation event within 24 hours" |
 
 ### 8.3 Reference Mappings
 
@@ -301,19 +302,19 @@ An implementation MAY claim conformance at one of three tiers: **Lite**, **Stand
 Any claim of conformance MUST:
 
 - Specify the conformance tier.
-- Specify the specification version (e.g., v0.2).
+- Specify the specification version (e.g., v0.3).
 - List any compliance mapping configurations applied.
-- Disclose any deviations from the core Authorization Trigger Matrix, Insurance Fuse, or Generation Boundary Rules.
+- Disclose any deviations from the core Authorization Trigger Decision Table, Authority Circuit Breaker, or Generation Boundary Rules.
 
 ### 9.3 Prohibited Claims
 
 An implementation SHALL NOT claim conformance if it:
 
 - Disables or weakens any Authorization Trigger specified in Section 3.2 without documented jurisdiction-specific justification in the compliance mapping layer.
-- Disables or weakens the Insurance Fuse specified in Section 4.
+- Disables or weakens the Authority Circuit Breaker specified in Section 4.
 - Removes any Generation Boundary category specified in Section 5.1.
 - Does not maintain an append-only, verifiable audit trail per Section 6.2.
-- Uses "An Open Governance Standard for Conversational Finance Agents" branding for a system that substitutes the core trust-boundary mechanisms with alternative approaches not conforming to this specification.
+- Uses the Conversational Finance Governance Framework branding for a system that substitutes the core trust-boundary mechanisms with alternative approaches not conforming to this specification.
 
 ---
 
@@ -321,13 +322,10 @@ An implementation SHALL NOT claim conformance if it:
 
 A reference implementation conforming to the Lite tier is maintained at [`/src`](../src/). It demonstrates engineering feasibility and serves as a starting point for adopters. It is not the sole compliant instantiation of this specification.
 
-## Appendix B: Empirical Foundation
-
-The core-to-mapping-layer decoupling described in Section 8 has been empirically validated across multiple jurisdictions with fundamentally different financial consumer protection regimes. In all deployment contexts, the core Authorization Trigger Matrix, Insurance Fuse, and Generation Boundary Rules remained architecturally identical. Only the compliance mapping layer required jurisdiction-specific configuration.
-
-## Appendix C: Version History
+## Appendix B: Version History
 
 | Version | Date | Changes |
 |---------|------|---------|
+| v0.3 | 2026-07-07 | Renamed Insurance Fuse → Authority Circuit Breaker throughout; aligned five-layer names with Conversational Finance Governance Framework (Intent Classification Matrix, Authorization Trigger, Generation Boundary, Audit Trail Pipeline, Authority Circuit Breaker); updated event types and parameter names for consistency; removed Input Safeguard as a separate governance layer |
 | v0.2 | 2026-05-25 | Added Insurance Fuse mechanism (Section 4); updated specification name throughout; renumbered sections 4–9; added fuse_activation to Audit Trail event types |
 | v0.1 | 2026-05-21 | Initial draft — core mechanisms, decision tables, conformance requirements |

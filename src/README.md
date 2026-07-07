@@ -5,9 +5,9 @@
 
 ## Overview
 
-This directory will contain the reference implementation of An Open Governance Standard for Conversational Finance Agents as defined in [`/spec/protocol-spec-v0.1.md`](../spec/protocol-spec-v0.1.md).
+This directory will contain the reference implementation of the Conversational Finance Governance Framework as defined in [`/spec/protocol-spec-v0.3.md`](../spec/protocol-spec-v0.3.md).
 
-The reference implementation is a deployable middleware that sits between a conversational AI agent and its users, enforcing the standard's Input Safeguard, Authorization Triggers, Insurance Fuse, Generation Boundaries, and Audit Trail requirements at runtime. It is not the sole compliant instantiation of the standard — any implementation conforming to the specification may claim conformance.
+The reference implementation is a deployable middleware that sits between a conversational AI agent and its users, enforcing the framework's Intent Classification Matrix, Authorization Triggers, Authority Circuit Breaker, Generation Boundaries, and Audit Trail Pipeline requirements at runtime. It is not the sole compliant instantiation of the specification — any implementation conforming to the specification may claim conformance.
 
 ## Architecture
 
@@ -15,21 +15,17 @@ The reference implementation is a deployable middleware that sits between a conv
 User → [Agent Runtime] → [Protocol Middleware] → [LLM]
                               │
                         ┌─────┴─────┐
-                        │   Input   │
-                        │ Safeguard │
-                        └─────┬─────┘
-                              │
-                        ┌─────┴─────┐
                         │  Intent   │
-                        │Classifier │
+                        │Classification│
+                        │  Matrix   │
                         └─────┬─────┘
                               │
            ┌──────────────────┼──────────────────┐
            │                  │                  │
     ┌──────┴──────┐   ┌──────┴──────┐   ┌──────┴──────┐
-    │Authorization│   │ Generation  │   │  Insurance  │
-    │  Trigger    │   │  Boundary   │   │    Fuse     │
-    │  Engine     │   │  Engine     │   │   Engine    │
+    │Authorization│   │ Generation  │   │  Authority  │
+    │  Trigger    │   │  Boundary   │   │  Circuit    │
+    │             │   │             │   │  Breaker    │
     └──────┬──────┘   └──────┬──────┘   └──────┬──────┘
            │                  │                  │
            └──────────────────┼──────────────────┘
@@ -37,18 +33,17 @@ User → [Agent Runtime] → [Protocol Middleware] → [LLM]
                         ┌─────┴─────┐
                         │   Audit   │
                         │   Trail   │
-                        │   Logger  │
+                        │  Pipeline │
                         └───────────┘
 ```
 
 ### Components
 
-- **Input Safeguard** — Pre-processes user input to detect prompt injection, PII leakage, and adversarial patterns before downstream processing.
-- **Intent Classifier** — Classifies each user utterance along the FCR and RS axes before the agent generates a response.
-- **Authorization Trigger Engine** — Applies the Authorization Trigger Decision Table to determine whether generation can proceed freely, requires user authorization, or must escalate.
-- **Insurance Fuse Engine** — Monitors cumulative conversation state and severs agent generation privilege when pre-defined compliance thresholds are reached, transferring control to a human operator or deterministic SOP.
-- **Generation Boundary Engine** — Enforces pre-generation and post-generation content boundaries per Section 5 of the spec.
-- **Audit Trail Logger** — Produces immutable, hash-chained JSON Lines log entries for every decision event including fuse activations.
+- **Intent Classification Matrix** — Classifies each user utterance along the FCR and RS axes before the agent generates a response.
+- **Authorization Trigger** — Applies the Authorization Trigger Decision Table to determine whether generation can proceed freely, requires user authorization, or must escalate.
+- **Authority Circuit Breaker** — Monitors cumulative conversation state and severs agent generation privilege when pre-defined compliance thresholds are reached, transferring control to a human operator or deterministic SOP.
+- **Generation Boundary** — Enforces pre-generation and post-generation content boundaries per Section 5 of the spec, constraining the model's permissible response space before a user-facing answer is delivered.
+- **Audit Trail Pipeline** — Produces immutable, hash-chained JSON Lines log entries for every decision event including circuit-break activations.
 
 ### Deployment Model
 
@@ -75,12 +70,11 @@ This directory currently contains only this architecture overview. The reference
 
 | Milestone | Status |
 |-----------|--------|
-| Intent Classifier (FCR/RS axes) | Planned |
-| Input Safeguard Layer | Planned |
+| Intent Classification Matrix (FCR/RS axes) | Planned |
 | Authorization Trigger Engine | Planned |
-| Insurance Fuse Engine | Planned |
+| Authority Circuit Breaker | Planned |
 | Generation Boundary Engine | Planned |
-| Audit Trail Logger (hash-chained JSONL) | Planned |
+| Audit Trail Pipeline (hash-chained JSONL) | Planned |
 | Docker deployment (Lite tier) | Planned |
 | Compliance mapping YAML loader | Planned |
 | Jurisdiction reference mapping examples | Planned |
