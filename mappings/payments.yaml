@@ -1,0 +1,40 @@
+# Product-line mapping: payments / wallets / remittance
+# Not legal advice. Overlay on core Sections 3–6. MUST NOT lower a 3.2 cell.
+
+product_line: payments
+jurisdiction_id: baseline
+spec_version: "0.4"
+confidence_floor: 0.70
+
+scoped_credential:
+  enabled: true
+  single_use: true
+  ttl_minutes: 15
+  max_amount: 200
+  currency: USD
+  merchant_or_rail_scope: "declared_payee_only"
+
+action_overrides:
+  inform: inherit          # Section 3.2 stands
+  advise: raise_to_auth    # payment advice is never FREE
+  commit: raise_to_auth
+  transact: raise_to_auth  # F3 cells may still ESCALATE via 3.2
+  represent: raise_to_escalate
+
+breaker_overrides:
+  cumulative_trigger_limit: 3
+  vulnerability_detection: enabled
+  trajectory_window: 5
+
+boundary_additions:
+  - "Unconditional fee-waiver promises"
+  - "Guaranteed settlement time as a binding commitment"
+
+retention_period_days: 2555
+audit_export_format: jsonl
+notification_requirements: []
+
+notes: >
+  Same user utterance, different authority. "Send 200 now" is transact+AUTH
+  (scoped credential). "Is this transfer allowed?" is represent+ESCALATE.
+  "What is the fee?" may be inform+FREE at F0/R0 if confidence >= floor.

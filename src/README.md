@@ -1,84 +1,62 @@
-# Reference Implementation
+# Reference Implementation — Lite sidecar
 
-**Status:** Pre-release (architecture defined, implementation in progress)  
-**License:** MIT  
+**Status:** v0.4 Lite control plane (no LLM)  
+**License:** MIT
 
-## Overview
+This directory contains a deployable **control-plane sidecar** for specification [v0.4](../spec/protocol-spec-v0.4.md). It sits conceptually between a conversational agent and an LLM. This Lite build classifies an utterance, binds an Action Object, applies a product-line mapping, optionally issues a scoped credential record, writes a hash-chained JSONL audit event, and prints Visible Authority State.
 
-This directory will contain the reference implementation of the Conversational Finance Governance Framework as defined in [`/spec/protocol-spec-v0.3.md`](../spec/protocol-spec-v0.3.md).
+It is not the sole compliant instantiation. It does not call a model. It does not move money.
 
-The reference implementation is a deployable middleware that sits between a conversational AI agent and its users, enforcing the framework's Intent Classification Matrix, Authorization Triggers, Authority Circuit Breaker, Generation Boundaries, and Audit Trail Pipeline requirements at runtime. It is not the sole compliant instantiation of the specification — any implementation conforming to the specification may claim conformance.
+## Run
 
-## Architecture
-
-```
-User → [Agent Runtime] → [Protocol Middleware] → [LLM]
-                              │
-                        ┌─────┴─────┐
-                        │  Intent   │
-                        │Classification│
-                        │  Matrix   │
-                        └─────┬─────┘
-                              │
-           ┌──────────────────┼──────────────────┐
-           │                  │                  │
-    ┌──────┴──────┐   ┌──────┴──────┐   ┌──────┴──────┐
-    │Authorization│   │ Generation  │   │  Authority  │
-    │  Trigger    │   │  Boundary   │   │  Circuit    │
-    │             │   │             │   │  Breaker    │
-    └──────┬──────┘   └──────┬──────┘   └──────┬──────┘
-           │                  │                  │
-           └──────────────────┼──────────────────┘
-                              │
-                        ┌─────┴─────┐
-                        │   Audit   │
-                        │   Trail   │
-                        │  Pipeline │
-                        └───────────┘
+```bash
+cd src
+python3 -m pip install -r requirements.txt
+python3 -m cf_gov.sidecar --mapping ../mappings/payments.yaml --utterance "What's the fee for sending 200 dollars?"
+python3 -m cf_gov.sidecar --mapping ../mappings/lending.yaml --utterance "Should I take the loan?"
+python3 -m cf_gov.sidecar --mapping ../mappings/insurance.yaml --utterance "Is this claim fully covered by my plan?"
+python3 -m cf_gov.sidecar --mapping ../mappings/collections.yaml --utterance "Pay now."
 ```
 
-### Components
+Optional audit file:
 
-- **Intent Classification Matrix** — Classifies each user utterance along the FCR and RS axes before the agent generates a response.
-- **Authorization Trigger** — Applies the Authorization Trigger Decision Table to determine whether generation can proceed freely, requires user authorization, or must escalate.
-- **Authority Circuit Breaker** — Monitors cumulative conversation state and severs agent generation privilege when pre-defined compliance thresholds are reached, transferring control to a human operator or deterministic SOP.
-- **Generation Boundary** — Enforces pre-generation and post-generation content boundaries per Section 5 of the spec, constraining the model's permissible response space before a user-facing answer is delivered.
-- **Audit Trail Pipeline** — Produces immutable, hash-chained JSON Lines log entries for every decision event including circuit-break activations.
+```bash
+python3 -m cf_gov.sidecar \
+  --mapping ../mappings/payments.yaml \
+  --utterance "Pay now. Send 200 dollars to Jane." \
+  --audit /tmp/cf-gov-audit.jsonl
+```
 
-### Deployment Model
+Tests from repository root:
 
-The middleware is designed to run as a **sidecar** — deployed alongside the agent runtime, intercepting requests and responses without requiring modification to the agent or LLM provider. This sidecar model minimizes integration friction:
+```bash
+python3 tests/test_sidecar.py
+```
 
-- The agent code doesn't change.
-- The LLM provider doesn't change.
-- The middleware enforces governance rules transparently.
+## What this sidecar enforces
 
-## Technology Direction
+- `(FCR, RS, Action)` tuple before any "generation" decision
+- Classification Assurance (`confidence_floor` from the mapping)
+- Section 3.2 FREE / AUTH / ESCALATE table
+- Product-line action overrides (payments vs lending vs insurance vs collections)
+- Scoped credential **record** with `secret_material_in_model_context=false`
+- Visible Authority State in the JSON output
+- Append-only hash-chained JSONL when `--audit` is set
 
-The reference implementation targets:
+## What this sidecar does not do
 
-- **Language**: Python 3.11+ (initial), with TypeScript/Node.js port planned
-- **Deployment**: Docker container, single binary for Lite tier
-- **Storage**: SQLite for Lite tier audit logs; PostgreSQL for Standard/Full
-- **Configuration**: YAML-based compliance mapping files
+- Call an LLM
+- Perform real payments
+- Replace a production intent model (the classifier is deterministic and pattern-based, for protocol demonstration)
+- Implement a human operator console
 
-## Current State
+## Layout
 
-This directory currently contains only this architecture overview. The reference implementation is under active development and will be published here when ready for early adopters.
-
-## Roadmap
-
-| Milestone | Status |
-|-----------|--------|
-| Intent Classification Matrix (FCR/RS axes) | Planned |
-| Authorization Trigger Engine | Planned |
-| Authority Circuit Breaker | Planned |
-| Generation Boundary Engine | Planned |
-| Audit Trail Pipeline (hash-chained JSONL) | Planned |
-| Docker deployment (Lite tier) | Planned |
-| Compliance mapping YAML loader | Planned |
-| Jurisdiction reference mapping examples | Planned |
-
-## License
-
-MIT — see [LICENSE](../LICENSE).
+```
+src/
+  requirements.txt
+  cf_gov/
+    __init__.py
+    engine.py      ← control plane
+    sidecar.py     ← CLI
+```

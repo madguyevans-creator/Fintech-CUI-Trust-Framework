@@ -1,0 +1,39 @@
+# Product-line mapping: insurance
+# Not legal advice. Overlay on core Sections 3–6. MUST NOT lower a 3.2 cell.
+
+product_line: insurance
+jurisdiction_id: baseline
+spec_version: "0.4"
+confidence_floor: 0.75
+
+scoped_credential:
+  enabled: true
+  single_use: true
+  ttl_minutes: 15
+  max_amount: 0            # Lite: premium collection is AUTH, not autonomous
+  currency: USD
+  merchant_or_rail_scope: "policy_premium_rail_only"
+
+action_overrides:
+  inform: inherit
+  advise: raise_to_auth
+  commit: raise_to_escalate   # price lock / coverage lock
+  transact: raise_to_auth     # premium payment still needs AUTH + credential
+  represent: raise_to_escalate  # "this is covered" is never FREE
+
+breaker_overrides:
+  cumulative_trigger_limit: 2
+  vulnerability_detection: enabled
+  trajectory_window: 5
+
+boundary_additions:
+  - "Coverage determinations stated as binding"
+  - "Unconditional premium-will-never-increase statements"
+
+retention_period_days: 2555
+audit_export_format: jsonl
+notification_requirements: []
+
+notes: >
+  "When does my policy renew?" may be inform. "You should renew today" is advise+AUTH.
+  "This claim is covered" is represent+ESCALATE. "Your premium is $247.50 locked" is commit+ESCALATE.

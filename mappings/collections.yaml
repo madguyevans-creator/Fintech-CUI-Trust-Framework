@@ -1,0 +1,43 @@
+# Product-line mapping: collections / repayment communications
+# Not legal advice. Overlay on core Sections 3–6. MUST NOT lower a 3.2 cell.
+
+product_line: collections
+jurisdiction_id: baseline
+spec_version: "0.4"
+confidence_floor: 0.80
+
+scoped_credential:
+  enabled: true
+  single_use: true
+  ttl_minutes: 10
+  max_amount: 0            # Lite: no autonomous debit from collections CUI
+  currency: USD
+  merchant_or_rail_scope: "none"
+
+action_overrides:
+  inform: inherit          # hours, already-disclosed balance MAY be FREE at F0/R0
+  advise: raise_to_escalate
+  commit: raise_to_escalate
+  transact: raise_to_escalate
+  represent: raise_to_escalate
+
+breaker_overrides:
+  cumulative_trigger_limit: 1
+  vulnerability_detection: enabled
+  trajectory_window: 3
+
+boundary_additions:
+  - "Threats, false urgency, or implied legal action"
+  - "Contacting third parties about the debt"
+  - "Collecting at times or frequencies prohibited by the mapping"
+  - "Persuasion that exploits expressed financial distress"
+
+retention_period_days: 2555
+audit_export_format: jsonl
+notification_requirements: []
+
+notes: >
+  Collections is the strictest reference mapping. Almost every non-inform action
+  ESCALATEs. Vulnerability signals fire the breaker at cumulative_trigger_limit=1.
+  The same "pay now" utterance that is transact+AUTH in payments.yaml is
+  transact+ESCALATE here.

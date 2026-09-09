@@ -1,0 +1,40 @@
+# Product-line mapping: lending / BNPL / credit
+# Not legal advice. Overlay on core Sections 3–6. MUST NOT lower a 3.2 cell.
+
+product_line: lending
+jurisdiction_id: baseline
+spec_version: "0.4"
+confidence_floor: 0.75
+
+scoped_credential:
+  enabled: true
+  single_use: true
+  ttl_minutes: 10
+  max_amount: 0            # Lite: no autonomous disbursement
+  currency: USD
+  merchant_or_rail_scope: "none"
+
+action_overrides:
+  inform: inherit
+  advise: raise_to_auth    # "you should take this loan" is never FREE
+  commit: raise_to_escalate
+  transact: raise_to_escalate
+  represent: raise_to_escalate
+
+breaker_overrides:
+  cumulative_trigger_limit: 2
+  vulnerability_detection: enabled
+  trajectory_window: 5
+
+boundary_additions:
+  - "Guaranteed approval"
+  - "Interest-rate predictions stated as fact"
+  - "Advice to borrow in order to repay another loan"
+
+retention_period_days: 2555
+audit_export_format: jsonl
+notification_requirements: []
+
+notes: >
+  "What is the APR?" may be inform. "Should I take the loan?" is advise+AUTH.
+  "You are approved" is commit/represent and ESCALATE. Disbursement is never FREE.
